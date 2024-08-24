@@ -17,7 +17,6 @@ Welcome to the MERN-Learn-Daily repository! This repository is dedicated to help
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
 - [Learning Resources](#learning-resources)
-- [License](#license)
 
 ## About the Repository
 
@@ -45,7 +44,3 @@ If you'd like to contribute to this repository, feel free to submit pull request
 - [Express.js Documentation](https://expressjs.com/)
 - [React Documentation](https://reactjs.org/docs/getting-started.html)
 - [Node.js Documentation](https://nodejs.org/en/docs/)
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
