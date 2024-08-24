@@ -15,7 +15,6 @@ Welcome to the MERN-Learn-Daily repository! This repository is dedicated to help
 
 - [About the Repository](#about-the-repository)
 - [Getting Started](#getting-started)
-- [Daily Learning](#daily-learning)
 - [Contributing](#contributing)
 - [Learning Resources](#learning-resources)
 - [License](#license)
