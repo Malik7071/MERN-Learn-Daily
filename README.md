@@ -39,8 +39,6 @@ To start learning MERN stack development, follow these steps:
 
 If you'd like to contribute to this repository, feel free to submit pull requests with your own code examples, tutorials, or projects related to MERN stack development. Your contributions will be greatly appreciated!
 
-Please follow the [Contribution Guidelines](CONTRIBUTING.md) before making a pull request.
-
 ## Learning Resources
 
 - [Official MongoDB Documentation](https://docs.mongodb.com/)
