@@ -26,8 +26,36 @@ MERN-Learn-Daily is designed to be a continuously evolving resource for anyone i
 
 ## Getting Started
 
-To begin your journey with the MERN stack:
+To start learning MERN stack development, follow these steps:
 
 1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/MERN-Learn-Daily.git
+   git clone https://github.com/harsh-100/daily-mern-stack.git
+
+2. **Navigate to the Directory**:
+   cd daily-mern-stack
+
+3. **Explore the Folders**:
+
+- `html-css`: Contains HTML and CSS code examples.
+- `mongodb-express`: Learn about setting up MongoDB and creating a backend with Express.js.
+- `react`: Dive into front-end development with React.
+- `node`: Explore backend development using Node.js.
+
+4. **Start Learning!**
+
+## Contributing
+
+If you'd like to contribute to this repository, feel free to submit pull requests with your own code examples, tutorials, or projects related to MERN stack development. Your contributions will be greatly appreciated!
+
+Please follow the [Contribution Guidelines](CONTRIBUTING.md) before making a pull request.
+
+## Learning Resources
+
+- [Official MongoDB Documentation](https://docs.mongodb.com/)
+- [Express.js Documentation](https://expressjs.com/)
+- [React Documentation](https://reactjs.org/docs/getting-started.html)
+- [Node.js Documentation](https://nodejs.org/en/docs/)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
