@@ -9,7 +9,7 @@
 
 ![MERN Logo](https://miro.medium.com/v2/resize:fit:678/0*kxPYwfJmkXZ3iCWy.png)
 
-Welcome to the MERN-Learn-Daily repository! This repository is dedicated to helping developers learn and master the MERN stack by providing daily code updates, tutorials, and projects. Whether you're just getting started or looking to deepen your knowledge, this repository will guide you through building full-stack applications using MongoDB, Express.js, React, and Node.js.
+Welcome to the MERN-Learn-Daily repository! This repository is dedicated to helping developers learn and master the MERN stack by providing daily code updates, tutorials, and projects. Whether you're just getting started or looking to deepen your knowledge, this repository will guide you through building full-stack applications using MongoDB, Express.js, React JS, and Node.js.
 
 ## Table of Contents
 
