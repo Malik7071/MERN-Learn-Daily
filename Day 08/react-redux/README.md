@@ -1,6 +1,6 @@
 # React Redux
 
-Learn how to manage application state efficiently using Redux in a React application.
+Learn how to manage application state efficiently using Redux.
 
 ## Key Concepts
 - **Redux Basics:** What is Redux and why it's useful for managing global state.
