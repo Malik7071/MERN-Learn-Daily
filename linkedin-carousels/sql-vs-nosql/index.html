@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SQL vs NoSQL — LinkedIn Carousel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-0: #0b1020;
+    --bg-1: #131a33;
+    --sql: #38bdf8;      /* cyan  */
+    --sql-2: #0ea5e9;
+    --nosql: #a78bfa;    /* violet */
+    --nosql-2: #7c3aed;
+    --accent: #f472b6;   /* pink   */
+    --ink: #f8fafc;
+    --muted: #94a3b8;
+    --card: rgba(255, 255, 255, 0.05);
+    --stroke: rgba(255, 255, 255, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Sora", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #05070f;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 40px 16px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hint {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    max-width: 620px;
+    line-height: 1.6;
+  }
+  .hint b { color: var(--ink); }
+
+  /* Each slide is a fixed 1080x1080 square — ideal for a LinkedIn carousel */
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1080px;
+    border-radius: 40px;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px 700px at -10% -10%, rgba(56,189,248,0.22), transparent 55%),
+      radial-gradient(1100px 700px at 110% 115%, rgba(167,139,250,0.24), transparent 55%),
+      linear-gradient(160deg, var(--bg-0), var(--bg-1));
+    padding: 88px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.55);
+  }
+
+  .grain::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 54px 54px;
+    mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 78%);
+    pointer-events: none;
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 14px;
+    font-weight: 700; letter-spacing: 0.3px; font-size: 22px;
+  }
+  .logo {
+    width: 46px; height: 46px; border-radius: 13px;
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 22px;
+    background: linear-gradient(135deg, var(--sql), var(--nosql));
+    color: #0b1020;
+  }
+  .page-num { color: var(--muted); font-size: 20px; font-weight: 600; }
+
+  .body { flex: 1; display: flex; flex-direction: column; justify-content: center; z-index: 2; }
+
+  .kicker {
+    display: inline-flex; align-items: center; gap: 10px;
+    align-self: flex-start;
+    padding: 12px 20px; border-radius: 999px;
+    border: 1px solid var(--stroke);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 22px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 34px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+
+  h1 { font-size: 118px; line-height: 0.98; font-weight: 800; letter-spacing: -2px; }
+  h2 { font-size: 76px; line-height: 1.03; font-weight: 800; letter-spacing: -1px; margin-bottom: 30px; }
+  .grad-sql { background: linear-gradient(120deg, var(--sql), #7dd3fc); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grad-nosql { background: linear-gradient(120deg, var(--nosql), #d8b4fe); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  p.lead { font-size: 34px; line-height: 1.5; color: #cbd5e1; max-width: 88%; margin-top: 26px; }
+
+  .foot { z-index: 2; display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 24px; }
+  .swipe { display: inline-flex; align-items: center; gap: 14px; font-weight: 600; color: var(--ink); }
+  .swipe .arrow { animation: nudge 1.4s ease-in-out infinite; }
+  @keyframes nudge { 0%,100%{ transform: translateX(0);} 50%{ transform: translateX(10px);} }
+
+  /* Lists */
+  ul.points { list-style: none; display: flex; flex-direction: column; gap: 30px; margin-top: 12px; }
+  ul.points li { display: flex; gap: 22px; align-items: flex-start; font-size: 33px; line-height: 1.4; color: #e2e8f0; }
+  .tick {
+    flex: 0 0 auto; width: 52px; height: 52px; border-radius: 14px;
+    display: grid; place-items: center; font-size: 28px; font-weight: 800;
+    background: var(--card); border: 1px solid var(--stroke);
+  }
+  .tick.sql { color: var(--sql); }
+  .tick.nosql { color: var(--nosql); }
+
+  /* Two-column compare */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-top: 10px; }
+  .col {
+    border-radius: 28px; padding: 40px; border: 1px solid var(--stroke);
+    background: var(--card);
+  }
+  .col.sql { box-shadow: inset 0 0 0 2px rgba(56,189,248,0.35); }
+  .col.nosql { box-shadow: inset 0 0 0 2px rgba(167,139,250,0.35); }
+  .col h3 { font-size: 44px; margin-bottom: 22px; }
+  .col ul { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+  .col li { font-size: 29px; color: #cbd5e1; line-height: 1.35; padding-left: 34px; position: relative; }
+  .col li::before { content: "▹"; position: absolute; left: 0; }
+  .col.sql li::before { color: var(--sql); }
+  .col.nosql li::before { color: var(--nosql); }
+
+  /* Comparison table */
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 30px; }
+  th, td { text-align: left; padding: 26px 20px; border-bottom: 1px solid var(--stroke); }
+  th { color: var(--muted); font-size: 24px; text-transform: uppercase; letter-spacing: 1.5px; }
+  th.c-sql { color: var(--sql); } th.c-nosql { color: var(--nosql); }
+  td:first-child { color: var(--muted); font-weight: 600; }
+  td { color: #e2e8f0; }
+
+  code, .mono { font-family: "JetBrains Mono", monospace; }
+  .snippet {
+    margin-top: 30px; border-radius: 22px; border: 1px solid var(--stroke);
+    background: rgba(2,6,23,0.6); padding: 34px 38px; font-size: 27px; line-height: 1.65;
+  }
+  .snippet .cm { color: #64748b; }
+  .snippet .kw { color: var(--sql); }
+  .snippet .kw2 { color: var(--nosql); }
+  .snippet .st { color: #86efac; }
+
+  .cta-box {
+    margin-top: 40px; align-self: flex-start;
+    padding: 26px 40px; border-radius: 20px;
+    font-size: 34px; font-weight: 700;
+    background: linear-gradient(120deg, var(--sql), var(--nosql));
+    color: #0b1020;
+  }
+
+  @media print {
+    @page { size: 1080px 1080px; margin: 0; }
+    body { padding: 0; gap: 0; background: #fff; }
+    .hint { display: none; }
+    .slide { border-radius: 0; box-shadow: none; page-break-after: always; break-after: page; }
+  }
+</style>
+</head>
+<body>
+
+<p class="hint">
+  This is your <b>SQL vs NoSQL</b> LinkedIn carousel (8 square slides).
+  To publish: open this file in Chrome → <b>Print</b> → <b>Save as PDF</b> (paper size 1080×1080 / “borderless”), then upload the PDF as a LinkedIn <b>document post</b>.
+</p>
+
+<!-- 1 · COVER -->
+<section class="slide grain">
+  <div class="top">
+    <div class="brand"><span class="logo">DB</span> DevBytes</div>
+    <div class="page-num">01</div>
+  </div>
+  <div class="body">
+    <span class="kicker"><span class="dot"></span> Database Basics</span>
+    <h1><span class="grad-sql">SQL</span> vs <span class="grad-nosql">NoSQL</span></h1>
+    <p class="lead">The 60-second guide every developer should read before choosing a database. 👇</p>
+  </div>
+  <div class="foot">
+    <span>#backend #databases</span>
+    <span class="swipe">Swipe <span class="arrow">→</span></span>
+  </div>
+</section>
+
+<!-- 2 · SQL -->
+<section class="slide grain">
+  <div class="top"><div class="brand"><span class="logo">DB</span> DevBytes</div><div class="page-num">02</div></div>
+  <div class="body">
+    <span class="kicker"><span class="dot"></span> Relational</span>
+    <h2>What is <span class="grad-sql">SQL</span>?</h2>
+    <p class="lead">Data lives in <b>tables</b> with rows &amp; columns. A fixed <b>schema</b> keeps everything structured and consistent.</p>
+    <ul class="points">
+      <li><span class="tick sql">✓</span> Structured, predictable data</li>
+      <li><span class="tick sql">✓</span> Strong relationships &amp; JOINs</li>
+      <li><span class="tick sql">✓</span> ACID transactions</li>
+    </ul>
+  </div>
+  <div class="foot"><span>MySQL · PostgreSQL · SQL Server</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 3 · NoSQL -->
+<section class="slide grain">
+  <div class="top"><div class="brand"><span class="logo">DB</span> DevBytes</div><div class="page-num">03</div></div>
+  <div class="body">
+    <span class="kicker"><span class="dot"></span> Non-relational</span>
+    <h2>What is <span class="grad-nosql">NoSQL</span>?</h2>
+    <p class="lead">Flexible data stored as <b>documents, key-values, graphs</b> or wide-columns. No rigid schema required.</p>
+    <ul class="points">
+      <li><span class="tick nosql">✓</span> Flexible, evolving schema</li>
+      <li><span class="tick nosql">✓</span> Built to scale horizontally</li>
+      <li><span class="tick nosql">✓</span> Great for huge, varied data</li>
+    </ul>
+  </div>
+  <div class="foot"><span>MongoDB · Redis · Cassandra</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 4 · HEAD TO HEAD -->
+<section class="slide grain">
+  <div class="top"><div class="brand"><span class="logo">DB</span> DevBytes</div><div class="page-num">04</div></div>
+  <div class="body">
+    <span class="kicker"><span class="dot"></span> Head to head</span>
+    <h2>Key differences</h2>
+    <table>
+      <thead>
+        <tr><th>Feature</th><th class="c-sql">SQL</th><th class="c-nosql">NoSQL</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Schema</td><td>Fixed</td><td>Dynamic</td></tr>
+        <tr><td>Structure</td><td>Tables</td><td>Docs / K-V / Graph</td></tr>
+        <tr><td>Scaling</td><td>Vertical</td><td>Horizontal</td></tr>
+        <tr><td>Best for</td><td>Complex queries</td><td>Speed &amp; scale</td></tr>
+        <tr><td>Consistency</td><td>Strong (ACID)</td><td>Eventual (BASE)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="foot"><span>Choose by need, not hype</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 5 · SYNTAX -->
+<section class="slide grain">
+  <div class="top"><div class="brand"><span class="logo">DB</span> DevBytes</div><div class="page-num">05</div></div>
+  <div class="body">
+    <span class="kicker"><span class="dot"></span> Same task, two styles</span>
+    <h2>Find all active users</h2>
+    <div class="cols">
+      <div class="col sql">
+        <h3 class="grad-sql">SQL</h3>
+        <div class="snippet mono">
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users<br/>
+<span class="kw">WHERE</span> status = <span class="st">'active'</span>;
+        </div>
+      </div>
+      <div class="col nosql">
+        <h3 class="grad-nosql">NoSQL</h3>
+        <div class="snippet mono">
+db.users.<span class="kw2">find</span>(<br/>
+&nbsp;&nbsp;{ status: <span class="st">"active"</span> }<br/>
+);
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Declarative vs document-style</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 6 · WHEN TO USE -->
+<section class="slide grain">
+  <div class="top"><div class="brand"><span class="logo">DB</span> DevBytes</div><div class="page-num">06</div></div>
+  <div class="body">
+    <span class="kicker"><span class="dot"></span> Pick the right tool</span>
+    <h2>When to use what</h2>
+    <div class="cols">
+      <div class="col sql">
+        <h3 class="grad-sql">Choose SQL</h3>
+        <ul>
+          <li>Banking &amp; payments</li>
+          <li>Complex reporting</li>
+          <li>Strict data integrity</li>
+        </ul>
+      </div>
+      <div class="col nosql">
+        <h3 class="grad-nosql">Choose NoSQL</h3>
+        <ul>
+          <li>Real-time &amp; chat apps</li>
+          <li>IoT &amp; big data streams</li>
+          <li>Rapidly changing data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Many apps use both</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 7 · TAKEAWAY -->
+<section class="slide grain">
+  <div class="top"><div class="brand"><span class="logo">DB</span> DevBytes</div><div class="page-num">07</div></div>
+  <div class="body">
+    <span class="kicker"><span class="dot"></span> The takeaway</span>
+    <h2>There is no “better”.<br/>Only the <span class="grad-sql">right fit</span>.</h2>
+    <p class="lead">SQL wins on <b>structure &amp; consistency</b>. NoSQL wins on <b>flexibility &amp; scale</b>. Match the database to your data and your growth.</p>
+    <div class="cta-box">💬 SQL or NoSQL for your project? Comment below!</div>
+  </div>
+  <div class="foot"><span>♻ Repost to help a dev</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 8 · CTA -->
+<section class="slide grain">
+  <div class="top"><div class="brand"><span class="logo">DB</span> DevBytes</div><div class="page-num">08</div></div>
+  <div class="body" style="align-items:center; text-align:center;">
+    <h2 style="font-size:88px;">Found this helpful?</h2>
+    <p class="lead" style="max-width:80%; text-align:center;">
+      👍 Like &nbsp;·&nbsp; 💾 Save &nbsp;·&nbsp; ♻ Repost<br/>
+      Follow for daily <b>backend &amp; database</b> bytes.
+    </p>
+    <div class="cta-box" style="align-self:center;">Follow @DevBytes</div>
+  </div>
+  <div class="foot" style="justify-content:center;"><span>Thanks for reading 🙌</span></div>
+</section>
+
+</body>
+</html>
