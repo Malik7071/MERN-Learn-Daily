@@ -1,0 +1,12 @@
+{
+  "name": "sql-vs-nosql-carousel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Renders the SQL vs NoSQL LinkedIn carousel (HTML) to a PDF and PNG slides.",
+  "scripts": {
+    "render": "node render.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^23.0.0"
+  }
+}

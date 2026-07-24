@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SQL vs NoSQL — LinkedIn Carousel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+  :root{
+    --sql-blue: #3b82f6;
+    --sql-blue-dark: #1d4ed8;
+    --nosql-green: #10b981;
+    --nosql-green-dark: #059669;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --paper: #f8fafc;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #e5e7eb;
+  }
+
+  .slide {
+    width: 1080px;
+    height: 1350px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    page-break-after: always;
+    background: var(--paper);
+  }
+
+  .slide:last-child { page-break-after: auto; }
+
+  .badge {
+    position: absolute;
+    top: 56px;
+    right: 56px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 1px;
+    z-index: 5;
+  }
+
+  .dark-badge {
+    color: rgba(15,23,42,0.35);
+  }
+
+  /* Decorative blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(0px);
+    opacity: 0.18;
+  }
+
+  /* ============ SLIDE 1 — TITLE ============ */
+  .s-title {
+    background: linear-gradient(155deg, #0f172a 0%, #1e293b 45%, #0f172a 100%);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 100px;
+  }
+  .s-title .blob-a { width: 620px; height: 620px; background: var(--sql-blue); top: -220px; left: -180px; }
+  .s-title .blob-b { width: 560px; height: 560px; background: var(--nosql-green); bottom: -220px; right: -160px; }
+
+  .vs-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    z-index: 2;
+    margin-bottom: 48px;
+  }
+  .vs-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: 64px;
+    padding: 22px 46px;
+    border-radius: 24px;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .vs-pill.sql { background: linear-gradient(135deg, var(--sql-blue), var(--sql-blue-dark)); box-shadow: 0 18px 40px rgba(59,130,246,0.35); }
+  .vs-pill.nosql { background: linear-gradient(135deg, var(--nosql-green), var(--nosql-green-dark)); box-shadow: 0 18px 40px rgba(16,185,129,0.35); }
+  .vs-x { font-size: 52px; font-weight: 900; color: #f8fafc; opacity: 0.5; }
+
+  .s-title h1 {
+    font-size: 88px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.08;
+    z-index: 2;
+    margin-bottom: 28px;
+  }
+  .s-title .sub {
+    font-size: 34px;
+    color: #cbd5e1;
+    font-weight: 500;
+    z-index: 2;
+    max-width: 820px;
+  }
+  .swipe {
+    position: absolute;
+    bottom: 70px;
+    left: 0; right: 0;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 28px;
+    font-weight: 600;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .swipe .arrow { font-size: 34px; animation: none; }
+
+  /* ============ Shared content slide header ============ */
+  .content-head {
+    padding: 84px 84px 0 84px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .content-head h2 {
+    font-size: 66px;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.12;
+  }
+  .content-body {
+    flex: 1;
+    padding: 40px 84px 90px 84px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .content-body.pack-top {
+    justify-content: flex-start;
+    padding-top: 64px;
+  }
+
+  /* ============ SLIDE 2 — WHAT IS SQL ============ */
+  .s-sql { background: linear-gradient(170deg, #eff6ff 0%, #f8fafc 55%); }
+  .s-sql .blob { background: var(--sql-blue); width: 700px; height: 700px; top: -300px; right: -280px; opacity: 0.10; }
+  .s-sql .eyebrow { color: var(--sql-blue-dark); }
+  .icon-tile {
+    width: 130px; height: 130px;
+    border-radius: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 68px;
+    margin-bottom: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.10);
+  }
+  .icon-tile.sql-tile { background: linear-gradient(135deg, var(--sql-blue), var(--sql-blue-dark)); }
+  .icon-tile.nosql-tile { background: linear-gradient(135deg, var(--nosql-green), var(--nosql-green-dark)); }
+
+  .feature-list { display: flex; flex-direction: column; gap: 28px; margin-top: 12px; }
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 26px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 30px 34px;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+  }
+  .feature-item .check {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    color: #fff;
+    font-weight: 800;
+  }
+  .sql-tile-sm { background: var(--sql-blue); }
+  .nosql-tile-sm { background: var(--nosql-green); }
+  .feature-item .txt { font-size: 32px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+  .feature-item .txt span { color: var(--muted); font-weight: 500; font-size: 26px; display:block; margin-top:4px; }
+
+  .examples-row {
+    margin-top: 44px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .example-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 26px;
+    padding: 16px 30px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  .example-chip.sqlc { background: var(--sql-blue-dark); }
+  .example-chip.nosqlc { background: var(--nosql-green-dark); }
+
+  /* ============ SLIDE 3 — WHAT IS NOSQL ============ */
+  .s-nosql { background: linear-gradient(170deg, #ecfdf5 0%, #f8fafc 55%); }
+  .s-nosql .blob { background: var(--nosql-green); width: 700px; height: 700px; top: -300px; right: -280px; opacity: 0.10; }
+  .s-nosql .eyebrow { color: var(--nosql-green-dark); }
+
+  /* ============ SLIDE 4 — COMPARISON TABLE ============ */
+  .s-compare { background: #0f172a; }
+  .s-compare .content-head h2 { color: #fff; }
+  .s-compare .eyebrow { color: #94a3b8; }
+  .cmp-table {
+    margin-top: 20px;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+  }
+  .cmp-row {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr;
+  }
+  .cmp-row.header .cmp-cell {
+    font-weight: 800;
+    font-size: 30px;
+    padding: 30px 28px;
+  }
+  .cmp-row.header .cmp-cell:first-child { background: #1e293b; color: #94a3b8; }
+  .cmp-row.header .cmp-cell.sql-h { background: linear-gradient(135deg, var(--sql-blue), var(--sql-blue-dark)); color: #fff; }
+  .cmp-row.header .cmp-cell.nosql-h { background: linear-gradient(135deg, var(--nosql-green), var(--nosql-green-dark)); color: #fff; }
+  .cmp-row .cmp-cell {
+    padding: 30px 28px;
+    font-size: 27px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+  .cmp-row:not(.header) .cmp-cell:first-child { background: #1e293b; color: #cbd5e1; font-weight: 700; }
+  .cmp-row:not(.header) .cmp-cell:nth-child(2) { background: #16233b; color: #dbeafe; }
+  .cmp-row:not(.header) .cmp-cell:nth-child(3) { background: #142a24; color: #d1fae5; }
+  .cmp-row:not(.header):nth-child(odd) .cmp-cell:first-child { background: #24304a; }
+  .cmp-row:not(.header):nth-child(odd) .cmp-cell:nth-child(2) { background: #1c2c4a; }
+  .cmp-row:not(.header):nth-child(odd) .cmp-cell:nth-child(3) { background: #1b342d; }
+
+  /* ============ SLIDE 5/6 — WHEN TO USE ============ */
+  .s-usecase { display: flex; flex-direction: column; }
+  .s-usecase.sql-bg { background: linear-gradient(170deg, #eff6ff 0%, #f8fafc 60%); }
+  .s-usecase.nosql-bg { background: linear-gradient(170deg, #ecfdf5 0%, #f8fafc 60%); }
+  .usecase-item {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 32px 36px;
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+    margin-bottom: 26px;
+  }
+  .usecase-emoji { font-size: 54px; flex-shrink: 0; width: 90px; text-align: center; }
+  .usecase-txt { font-size: 33px; font-weight: 600; color: var(--ink); }
+
+  /* ============ SLIDE 7 — TAKEAWAY / CTA ============ */
+  .s-cta {
+    background: linear-gradient(155deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 110px;
+  }
+  .s-cta .blob-a { width: 600px; height: 600px; background: var(--nosql-green); top: -200px; right: -200px; }
+  .s-cta .blob-b { width: 600px; height: 600px; background: var(--sql-blue); bottom: -220px; left: -200px; }
+  .s-cta h2 {
+    font-size: 66px;
+    font-weight: 900;
+    color: #fff;
+    z-index: 2;
+    line-height: 1.2;
+    margin-bottom: 40px;
+  }
+  .rule-card {
+    z-index: 2;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 28px;
+    padding: 44px 54px;
+    margin-bottom: 24px;
+    max-width: 880px;
+    backdrop-filter: blur(6px);
+  }
+  .rule-card .lbl { font-family:'JetBrains Mono', monospace; font-weight:700; font-size:24px; letter-spacing:1px; margin-bottom: 12px; }
+  .rule-card.sql-r .lbl { color: #93c5fd; }
+  .rule-card.nosql-r .lbl { color: #6ee7b7; }
+  .rule-card p { font-size: 32px; color: #e2e8f0; font-weight: 500; line-height: 1.4; }
+  .cta-footer {
+    z-index: 2;
+    margin-top: 40px;
+    font-size: 30px;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+  .cta-footer b { color: #fff; }
+
+  .page-num {
+    position: absolute;
+    bottom: 56px;
+    left: 56px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    color: rgba(148,163,184,0.7);
+    z-index: 5;
+  }
+  .page-num.on-light { color: rgba(15,23,42,0.35); }
+</style>
+</head>
+<body>
+
+  <!-- SLIDE 1: TITLE -->
+  <section class="slide s-title">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="vs-row">
+      <div class="vs-pill sql">SQL</div>
+      <div class="vs-x">VS</div>
+      <div class="vs-pill nosql">NoSQL</div>
+    </div>
+    <h1>Which database<br/>should YOU pick? 🤔</h1>
+    <div class="sub">A 60-second breakdown every developer needs</div>
+    <div class="swipe">Swipe to find out <span class="arrow">→</span></div>
+  </section>
+
+  <!-- SLIDE 2: WHAT IS SQL -->
+  <section class="slide s-sql">
+    <div class="blob"></div>
+    <div class="badge dark-badge">01 / 05</div>
+    <div class="content-head">
+      <div class="eyebrow">Relational</div>
+      <h2>What is SQL? 🗄️</h2>
+    </div>
+    <div class="content-body">
+      <div class="icon-tile sql-tile">🗃️</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="check sql-tile-sm">✓</div>
+          <div class="txt">Structured data in tables<span>Rows &amp; columns, like a spreadsheet</span></div>
+        </div>
+        <div class="feature-item">
+          <div class="check sql-tile-sm">✓</div>
+          <div class="txt">Fixed schema<span>Every row follows the same defined structure</span></div>
+        </div>
+        <div class="feature-item">
+          <div class="check sql-tile-sm">✓</div>
+          <div class="txt">Powerful joins &amp; ACID transactions<span>Built for accuracy and relationships</span></div>
+        </div>
+      </div>
+      <div class="examples-row">
+        <div class="example-chip sqlc">MySQL</div>
+        <div class="example-chip sqlc">PostgreSQL</div>
+        <div class="example-chip sqlc">SQLite</div>
+        <div class="example-chip sqlc">SQL Server</div>
+      </div>
+    </div>
+    <div class="page-num on-light">SQL VS NOSQL</div>
+  </section>
+
+  <!-- SLIDE 3: WHAT IS NOSQL -->
+  <section class="slide s-nosql">
+    <div class="blob"></div>
+    <div class="badge dark-badge">02 / 05</div>
+    <div class="content-head">
+      <div class="eyebrow">Non-Relational</div>
+      <h2>What is NoSQL? 🍃</h2>
+    </div>
+    <div class="content-body">
+      <div class="icon-tile nosql-tile">🧩</div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="check nosql-tile-sm">✓</div>
+          <div class="txt">Flexible data models<span>Documents, key-value, graph, or wide-column</span></div>
+        </div>
+        <div class="feature-item">
+          <div class="check nosql-tile-sm">✓</div>
+          <div class="txt">Dynamic schema<span>Add fields anytime, no rigid structure</span></div>
+        </div>
+        <div class="feature-item">
+          <div class="check nosql-tile-sm">✓</div>
+          <div class="txt">Built to scale horizontally<span>Great for huge, fast-growing datasets</span></div>
+        </div>
+      </div>
+      <div class="examples-row">
+        <div class="example-chip nosqlc">MongoDB</div>
+        <div class="example-chip nosqlc">Redis</div>
+        <div class="example-chip nosqlc">Cassandra</div>
+        <div class="example-chip nosqlc">DynamoDB</div>
+      </div>
+    </div>
+    <div class="page-num on-light">SQL VS NOSQL</div>
+  </section>
+
+  <!-- SLIDE 4: COMPARISON TABLE -->
+  <section class="slide s-compare">
+    <div class="badge">03 / 05</div>
+    <div class="content-head">
+      <div class="eyebrow">Head to head</div>
+      <h2>The Key Differences ⚖️</h2>
+    </div>
+    <div class="content-body pack-top">
+      <div class="cmp-table">
+        <div class="cmp-row header">
+          <div class="cmp-cell"></div>
+          <div class="cmp-cell sql-h">SQL</div>
+          <div class="cmp-cell nosql-h">NoSQL</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-cell">Schema</div>
+          <div class="cmp-cell">Fixed &amp; strict</div>
+          <div class="cmp-cell">Flexible &amp; dynamic</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-cell">Structure</div>
+          <div class="cmp-cell">Tables &amp; rows</div>
+          <div class="cmp-cell">Docs, KV, graph</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-cell">Scaling</div>
+          <div class="cmp-cell">Vertical</div>
+          <div class="cmp-cell">Horizontal</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-cell">Consistency</div>
+          <div class="cmp-cell">Strong (ACID)</div>
+          <div class="cmp-cell">Eventual (BASE)</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-cell">Best for</div>
+          <div class="cmp-cell">Complex queries</div>
+          <div class="cmp-cell">Speed &amp; scale</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: WHEN TO USE SQL -->
+  <section class="slide s-usecase sql-bg">
+    <div class="blob" style="background:var(--sql-blue); width:700px; height:700px; top:-300px; right:-280px; opacity:0.10;"></div>
+    <div class="badge dark-badge">04 / 05</div>
+    <div class="content-head">
+      <div class="eyebrow" style="color:var(--sql-blue-dark)">Choose SQL when...</div>
+      <h2>You need structure &amp; precision 📐</h2>
+    </div>
+    <div class="content-body">
+      <div class="usecase-item"><div class="usecase-emoji">🏦</div><div class="usecase-txt">Banking &amp; financial systems</div></div>
+      <div class="usecase-item"><div class="usecase-emoji">🔗</div><div class="usecase-txt">Data has complex relationships</div></div>
+      <div class="usecase-item"><div class="usecase-emoji">📊</div><div class="usecase-txt">Heavy reporting &amp; analytics</div></div>
+      <div class="usecase-item"><div class="usecase-emoji">🔒</div><div class="usecase-txt">Strong consistency is critical</div></div>
+    </div>
+    <div class="page-num on-light">SQL VS NOSQL</div>
+  </section>
+
+  <!-- SLIDE 6: WHEN TO USE NOSQL -->
+  <section class="slide s-usecase nosql-bg">
+    <div class="blob" style="background:var(--nosql-green); width:700px; height:700px; top:-300px; right:-280px; opacity:0.10;"></div>
+    <div class="badge dark-badge">05 / 05</div>
+    <div class="content-head">
+      <div class="eyebrow" style="color:var(--nosql-green-dark)">Choose NoSQL when...</div>
+      <h2>You need speed &amp; flexibility ⚡</h2>
+    </div>
+    <div class="content-body">
+      <div class="usecase-item"><div class="usecase-emoji">🚀</div><div class="usecase-txt">Rapidly evolving data models</div></div>
+      <div class="usecase-item"><div class="usecase-emoji">🌍</div><div class="usecase-txt">Massive scale, real-time apps</div></div>
+      <div class="usecase-item"><div class="usecase-emoji">📱</div><div class="usecase-txt">Content, catalogs &amp; feeds</div></div>
+      <div class="usecase-item"><div class="usecase-emoji">🗂️</div><div class="usecase-txt">Unstructured or semi-structured data</div></div>
+    </div>
+    <div class="page-num on-light">SQL VS NOSQL</div>
+  </section>
+
+  <!-- SLIDE 7: CTA -->
+  <section class="slide s-cta">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <h2>There's no "better" —<br/>only "better fit" ✨</h2>
+    <div class="rule-card sql-r">
+      <div class="lbl">RULE OF THUMB</div>
+      <p>Structured, relational data → <b>go SQL</b></p>
+    </div>
+    <div class="rule-card nosql-r">
+      <div class="lbl">RULE OF THUMB</div>
+      <p>Flexible, fast-scaling data → <b>go NoSQL</b></p>
+    </div>
+    <div class="cta-footer">💬 Which one do <b>you</b> reach for first? Drop it below 👇<br/>Follow for more daily dev bites 🚀</div>
+  </section>
+
+</body>
+</html>
