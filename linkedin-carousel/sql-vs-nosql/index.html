@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL vs NoSQL — LinkedIn Carousel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #07131f;
+      --ink-2: #0c1c2e;
+      --panel: #10253a;
+      --foam: #e8f3f0;
+      --mist: #9fb6c4;
+      --lime: #c8f542;
+      --sky: #4fd1c5;
+      --coral: #ff7a59;
+      --sql: #4fd1c5;
+      --nosql: #c8f542;
+      --radius: 28px;
+      --slide-w: min(420px, 92vw);
+      --slide-h: calc(var(--slide-w) * 1.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: "Manrope", sans-serif;
+      color: var(--foam);
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(79, 209, 197, 0.18), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 100%, rgba(200, 245, 66, 0.12), transparent 50%),
+        linear-gradient(160deg, #050d16 0%, #0a1828 45%, #07131f 100%);
+      display: grid;
+      place-items: center;
+      padding: 2rem 1rem 3rem;
+      overflow-x: hidden;
+    }
+
+    .page {
+      width: min(1100px, 100%);
+      display: grid;
+      gap: 1.5rem;
+      justify-items: center;
+    }
+
+    .chrome {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .chrome h1 {
+      font-family: "Syne", sans-serif;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .chrome p {
+      color: var(--mist);
+      font-size: 0.95rem;
+      max-width: 34ch;
+      line-height: 1.45;
+    }
+
+    .hint {
+      color: var(--mist);
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .stage {
+      position: relative;
+      width: var(--slide-w);
+      height: var(--slide-h);
+      perspective: 1200px;
+    }
+
+    .carousel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateX(28px) scale(0.98);
+      pointer-events: none;
+      transition:
+        opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      background:
+        radial-gradient(circle at 85% 12%, rgba(200, 245, 66, 0.14), transparent 35%),
+        radial-gradient(circle at 10% 90%, rgba(79, 209, 197, 0.16), transparent 40%),
+        linear-gradient(165deg, #0d2136 0%, #0a1a2b 55%, #081523 100%);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232, 243, 240, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232, 243, 240, 0.035) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.55), transparent 75%);
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    .slide.exit-left {
+      opacity: 0;
+      transform: translateX(-28px) scale(0.98);
+    }
+
+    .brand {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: auto;
+    }
+
+    .brand-mark {
+      font-family: "Syne", sans-serif;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lime);
+    }
+
+    .slide-num {
+      font-size: 0.75rem;
+      color: var(--mist);
+      letter-spacing: 0.08em;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 1rem;
+      margin-top: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--sky);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 1.4rem;
+      height: 2px;
+      background: currentColor;
+    }
+
+    h2 {
+      font-family: "Syne", sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 7vw, 2.55rem);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+
+    .lede {
+      color: var(--mist);
+      font-size: 1.02rem;
+      line-height: 1.45;
+      max-width: 28ch;
+    }
+
+    .big-vs {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .side {
+      padding: 1rem 0.85rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+    }
+
+    .side strong {
+      display: block;
+      font-family: "Syne", sans-serif;
+      font-size: 1.35rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .side span {
+      font-size: 0.78rem;
+      color: var(--mist);
+    }
+
+    .side.sql strong { color: var(--sql); }
+    .side.nosql strong { color: var(--nosql); }
+
+    .vs-pill {
+      font-family: "Syne", sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--ink);
+      background: var(--foam);
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+    }
+
+    .points {
+      list-style: none;
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .points li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.7rem;
+      align-items: start;
+      font-size: 1.02rem;
+      line-height: 1.35;
+      color: var(--foam);
+    }
+
+    .bullet {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 999px;
+      margin-top: 0.45rem;
+      background: var(--lime);
+      box-shadow: 0 0 0 4px rgba(200, 245, 66, 0.15);
+    }
+
+    .bullet.sky { background: var(--sky); box-shadow: 0 0 0 4px rgba(79, 209, 197, 0.15); }
+
+    .compare {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 0.6rem;
+      align-items: center;
+      padding: 0.75rem 0.85rem;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .row dt {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mist);
+      font-weight: 700;
+    }
+
+    .row dd {
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .cta-line {
+      font-family: "Syne", sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--lime);
+    }
+
+    .swipe {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--mist);
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+    }
+
+    .swipe span {
+      animation: nudge 1.6s ease-in-out infinite;
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(5px); }
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .nav-btn {
+      width: 2.75rem;
+      height: 2.75rem;
+      border: 1px solid rgba(232, 243, 240, 0.18);
+      background: rgba(16, 37, 58, 0.7);
+      color: var(--foam);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 1.15rem;
+      backdrop-filter: blur(8px);
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(200, 245, 66, 0.15);
+      border-color: rgba(200, 245, 66, 0.45);
+    }
+
+    .dots {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(232, 243, 240, 0.25);
+      cursor: pointer;
+      transition: width 220ms ease, background 220ms ease;
+    }
+
+    .dot.active {
+      width: 1.35rem;
+      background: var(--lime);
+    }
+
+    .export-note {
+      width: min(420px, 92vw);
+      color: var(--mist);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .accent-sql { color: var(--sql); }
+    .accent-nosql { color: var(--nosql); }
+
+    .cover-title {
+      font-size: clamp(2.4rem, 9vw, 3.2rem);
+    }
+
+    .split-title {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: rgba(200, 245, 66, 0.12);
+      color: var(--lime);
+      border: 1px solid rgba(200, 245, 66, 0.28);
+      width: fit-content;
+    }
+
+    @media (max-width: 560px) {
+      .chrome { justify-content: center; text-align: center; }
+      .chrome p { margin-inline: auto; }
+    }
+
+    /* LinkedIn PDF export: one slide per page, 1080×1350 ratio */
+    @media print {
+      @page {
+        size: 1080px 1350px;
+        margin: 0;
+      }
+
+      body {
+        background: #0a1a2b;
+        padding: 0;
+        display: block;
+      }
+
+      .chrome,
+      .controls,
+      .export-note,
+      .swipe {
+        display: none !important;
+      }
+
+      .page {
+        width: auto;
+        gap: 0;
+      }
+
+      .stage,
+      .carousel {
+        width: 1080px;
+        height: auto;
+        box-shadow: none;
+        border-radius: 0;
+        overflow: visible;
+      }
+
+      .slide {
+        position: relative !important;
+        inset: auto !important;
+        width: 1080px;
+        height: 1350px;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        page-break-after: always;
+        break-after: page;
+        padding: 72px 64px;
+      }
+
+      .slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      h2, .cover-title {
+        font-size: 84px !important;
+      }
+
+      .lede, .points li {
+        font-size: 32px !important;
+      }
+
+      .brand-mark {
+        font-size: 22px !important;
+      }
+
+      .slide-num, .eyebrow {
+        font-size: 20px !important;
+      }
+
+      .tag {
+        font-size: 22px !important;
+        padding: 12px 22px;
+      }
+
+      .side strong { font-size: 40px !important; }
+      .side span { font-size: 22px !important; }
+      .row dt { font-size: 20px !important; }
+      .row dd { font-size: 28px !important; }
+      .cta-line { font-size: 34px !important; }
+      .compare, .points, .big-vs { gap: 22px; }
+      .row, .side { padding: 28px 24px; border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="chrome">
+      <div>
+        <h1>SQL vs NoSQL</h1>
+        <p>A short LinkedIn carousel — swipe through, screenshot each slide, or export as PDF.</p>
+      </div>
+      <p class="hint">← → keys · click dots · drag</p>
+    </header>
+
+    <div class="stage" id="stage">
+      <div class="carousel" id="carousel" aria-live="polite">
+
+        <!-- 1 Cover -->
+        <section class="slide active" data-slide="0" aria-label="Slide 1 of 7">
+          <div class="brand">
+            <div class="brand-mark">Data Basics</div>
+            <div class="slide-num">01 / 07</div>
+          </div>
+          <div class="content">
+            <p class="eyebrow">Databases, demystified</p>
+            <h2 class="cover-title split-title">
+              <span class="accent-sql">SQL</span>
+              <span>vs</span>
+              <span class="accent-nosql">NoSQL</span>
+            </h2>
+            <p class="lede">Pick the right database in 30 seconds — not after a 40-tab rabbit hole.</p>
+            <div class="swipe">Swipe to learn <span>→</span></div>
+          </div>
+        </section>
+
+        <!-- 2 SQL -->
+        <section class="slide" data-slide="1" aria-label="Slide 2 of 7">
+          <div class="brand">
+            <div class="brand-mark">SQL</div>
+            <div class="slide-num">02 / 07</div>
+          </div>
+          <div class="content">
+            <p class="eyebrow">Structured Query Language</p>
+            <h2>Rows. Tables.<br />Rules.</h2>
+            <p class="lede">Data lives in fixed schemas. Relationships are explicit. Consistency is king.</p>
+            <span class="tag">Think: Postgres · MySQL · SQL Server</span>
+          </div>
+        </section>
+
+        <!-- 3 NoSQL -->
+        <section class="slide" data-slide="2" aria-label="Slide 3 of 7">
+          <div class="brand">
+            <div class="brand-mark">NoSQL</div>
+            <div class="slide-num">03 / 07</div>
+          </div>
+          <div class="content">
+            <p class="eyebrow" style="color: var(--lime)">Not Only SQL</p>
+            <h2>Flexible.<br />Fast to ship.</h2>
+            <p class="lede">Documents, key-value, graphs — schema can bend as your product evolves.</p>
+            <span class="tag">Think: MongoDB · Redis · DynamoDB</span>
+          </div>
+        </section>
+
+        <!-- 4 Side by side -->
+        <section class="slide" data-slide="3" aria-label="Slide 4 of 7">
+          <div class="brand">
+            <div class="brand-mark">At a glance</div>
+            <div class="slide-num">04 / 07</div>
+          </div>
+          <div class="content">
+            <p class="eyebrow">Shape of data</p>
+            <h2>Two models.<br />One decision.</h2>
+            <div class="big-vs">
+              <div class="side sql">
+                <strong>SQL</strong>
+                <span>Tables &amp; joins</span>
+              </div>
+              <div class="vs-pill">VS</div>
+              <div class="side nosql">
+                <strong>NoSQL</strong>
+                <span>Docs &amp; keys</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5 Choose SQL -->
+        <section class="slide" data-slide="4" aria-label="Slide 5 of 7">
+          <div class="brand">
+            <div class="brand-mark">Choose SQL</div>
+            <div class="slide-num">05 / 07</div>
+          </div>
+          <div class="content">
+            <p class="eyebrow">When SQL wins</p>
+            <h2>Use SQL when…</h2>
+            <ul class="points">
+              <li><span class="bullet sky"></span><span>Transactions must be airtight (money, inventory)</span></li>
+              <li><span class="bullet sky"></span><span>You need complex joins &amp; reporting</span></li>
+              <li><span class="bullet sky"></span><span>Your schema is stable and clear</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 6 Choose NoSQL -->
+        <section class="slide" data-slide="5" aria-label="Slide 6 of 7">
+          <div class="brand">
+            <div class="brand-mark">Choose NoSQL</div>
+            <div class="slide-num">06 / 07</div>
+          </div>
+          <div class="content">
+            <p class="eyebrow" style="color: var(--lime)">When NoSQL wins</p>
+            <h2>Use NoSQL when…</h2>
+            <ul class="points">
+              <li><span class="bullet"></span><span>Data shape changes often</span></li>
+              <li><span class="bullet"></span><span>You need horizontal scale &amp; speed</span></li>
+              <li><span class="bullet"></span><span>You’re shipping features fast (MVP)</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 7 Bottom line -->
+        <section class="slide" data-slide="6" aria-label="Slide 7 of 7">
+          <div class="brand">
+            <div class="brand-mark">Bottom line</div>
+            <div class="slide-num">07 / 07</div>
+          </div>
+          <div class="content">
+            <p class="eyebrow">Remember this</p>
+            <h2>Not rivals.<br />Tools.</h2>
+            <dl class="compare">
+              <div class="row">
+                <dt>Need order</dt>
+                <dd class="accent-sql">→ SQL</dd>
+              </div>
+              <div class="row">
+                <dt>Need flexibility</dt>
+                <dd class="accent-nosql">→ NoSQL</dd>
+              </div>
+            </dl>
+            <p class="cta-line">Save this. Share with a junior.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="controls" role="group" aria-label="Carousel controls">
+      <button class="nav-btn" id="prev" aria-label="Previous slide">‹</button>
+      <div class="dots" id="dots"></div>
+      <button class="nav-btn" id="next" aria-label="Next slide">›</button>
+    </div>
+
+    <p class="export-note">
+      LinkedIn tip: post as a PDF document (7 pages, portrait). Open this file → Print → Save as PDF, one slide per page — or screenshot each slide at full size.
+    </p>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const dotsRoot = document.getElementById("dots");
+    const params = new URLSearchParams(location.search);
+    let index = Math.min(slides.length - 1, Math.max(0, Number(params.get("slide") || 0)));
+    let locked = false;
+
+    // Deep-link support for screenshots / sharing (?slide=0..6)
+    if (index !== 0) {
+      slides.forEach((s, i) => s.classList.toggle("active", i === index));
+    }
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot" + (i === index ? " active" : "");
+      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      dot.addEventListener("click", () => go(i));
+      dotsRoot.appendChild(dot);
+    });
+
+    const dots = [...dotsRoot.querySelectorAll(".dot")];
+
+    function go(next) {
+      if (locked || next === index) return;
+      locked = true;
+      const prev = index;
+      index = (next + slides.length) % slides.length;
+
+      slides[prev].classList.remove("active");
+      slides[prev].classList.add("exit-left");
+      slides[index].classList.add("active");
+
+      dots.forEach((d, i) => d.classList.toggle("active", i === index));
+
+      setTimeout(() => {
+        slides[prev].classList.remove("exit-left");
+        locked = false;
+      }, 420);
+    }
+
+    document.getElementById("prev").addEventListener("click", () => go(index - 1));
+    document.getElementById("next").addEventListener("click", () => go(index + 1));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") go(index + 1);
+      if (e.key === "ArrowLeft") go(index - 1);
+    });
+
+    // Touch / drag
+    let startX = 0;
+    const stage = document.getElementById("stage");
+    stage.addEventListener("pointerdown", (e) => { startX = e.clientX; });
+    stage.addEventListener("pointerup", (e) => {
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) < 40) return;
+      go(dx < 0 ? index + 1 : index - 1);
+    });
+  </script>
+</body>
+</html>
